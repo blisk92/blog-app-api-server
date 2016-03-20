@@ -4,9 +4,16 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var blogPost = require('../models/BlogPost');
 
-//Get all BlogPost elements
+//Get all BlogPost elements excluding DRAFTS
 router.get('/', function(req, res, next) {
-	blogPost.find({},{title:1, updated_at: 1}, function(err, posts) {
+	blogPost.find({draft:"false"},{title:1, updated_at: 1}, function(err, posts) {
+		if(err) return next(err);
+		res.json(posts);
+	});
+});
+
+router.get('/drafts', function(req, res, next) {
+	blogPost.find({draft:"true"}, {title:1, updated_at:1}, function(err, posts) {
 		if(err) return next(err);
 		res.json(posts);
 	});
@@ -30,7 +37,7 @@ router.get('/:id',function(req, res, next) {
 
 //PUT update article by id
 router.put('/:id', function(req, res, next){
-	blogPost.findyByIdAndUpdate(req.params.id, req.body, function(err, post) {
+	blogPost.findByIdAndUpdate(req.params.id, req.body, function(err, post) {
 		if(err) return next(err);
 		res.json(post);
 	});
